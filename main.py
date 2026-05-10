@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
-
+class ChatRequest(BaseModel):
+    message:str
 from agent import generate_response
 
 app = FastAPI()
@@ -25,6 +26,8 @@ def health():
 
 @app.post("/chat")
 def chat(request: ChatRequest):
+    some_response = "Which role are you hiring for?"
+    return {"response":some_response}
 
     messages = [
         {
