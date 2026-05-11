@@ -1,5 +1,4 @@
 import json
-import faiss
 import numpy as np
 
 from sentence_transformers import SentenceTransformer
@@ -44,7 +43,6 @@ embeddings = np.array(
 
 dimension = embeddings.shape[1]
 
-index = faiss.IndexFlatL2(dimension)
 
 index.add(embeddings)
 
