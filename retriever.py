@@ -1,15 +1,4 @@
 import json
-import numpy as np
-
-from sentence_transformers import SentenceTransformer
-
-
-print("Loading retriever...")
-
-model = SentenceTransformer(
-    "all-MiniLM-L6-v2",device="cpu"
-)
-
 def search_assessments(query):
     assessments = [
         {"name": "Java Developer Test", "url": "https://www.shl.com/java"},
