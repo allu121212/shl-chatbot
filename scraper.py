@@ -2,21 +2,16 @@ import requests
 from bs4 import BeautifulSoup
 import json
 import time
-
 BASE_URL = "https://www.shl.com"
 
 CATALOG_URL = "https://www.shl.com/solutions/products/product-catalog/"
-
 
 headers = {
     "User-Agent": "Mozilla/5.0"
 }
 
-
 response = requests.get(CATALOG_URL, headers=headers)
-
 soup = BeautifulSoup(response.text, "lxml")
-
 
 links = soup.find_all("a")
 

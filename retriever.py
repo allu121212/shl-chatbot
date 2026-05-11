@@ -11,37 +11,33 @@ model = SentenceTransformer(
     "all-MiniLM-L6-v2",device="cpu"
 )
 
-index = faiss.read_index(
-    "data/shl.index"
-)
+def search_assessments(query):
+    assessments = [
+        {"name": "Java Developer Test", "url": "https://www.shl.com/java"},
+        {"name": "Python Developer Test", "url": "https://www.shl.com/python"},
+        {"name": "Frontend Developer Test", "url": "https://www.shl.com/frontend"},
+        {"name": "Cognitive Ability Test (GSA)", "url": "https://www.shl.com/gsa"},
+        {"name": "Personality Assessment (OPQ)", "url": "https://www.shl.com/opq"}
+    ]
 
-with open(
-    "data/catalog.json",
-    "r",
-    encoding="utf-8"
-) as f:
+    query_words = set(query.lower().split())
 
-    catalog = json.load(f)
+    scored_results = []
 
+    for item in assessments:
+        name_words = set(item["name"].lower().split())
 
-def search_assessments(query, k=5):
+        # simple similarity score
+        score = len(query_words & name_words)
 
-    query_embedding = model.encode([query])
+        if score > 0:
+            scored_results.append((score, item))
 
-    query_embedding = np.array(
-        query_embedding,
-        dtype="float32"
-    )
+    scored_results.sort(reverse=True, key=lambda x: x[0])
 
-    distances, indices = index.search(
-        query_embedding,
-        k
-    )
+    results = [item for _, item in scored_results]
 
-    results = []
-
-    for idx in indices[0]:
-
-        results.append(catalog[idx])
+    if not results:
+        results = assessments
 
     return results
