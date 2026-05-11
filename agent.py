@@ -1,60 +1,65 @@
 from retriever import search_assessments
 
+def chat_agent(messages):
 
-def needs_clarification(user_message):
-
-    user_message = user_message.lower()
+    latest_message = messages[-1]["content"].lower()
 
     vague_words = [
         "assessment",
         "test",
-        "hiring"
+        "hiring",
+        "developer",
+        "engineer"
     ]
 
-    if len(user_message.split()) < 4:
-        return True
-
-    for word in vague_words:
-
-        if word in user_message and len(user_message.split()) < 8:
-            return True
-
-    return False
-
-
-def generate_response(messages):
-
-    latest_message = messages[-1]["content"]
-
-    if needs_clarification(latest_message):
-
+   
+    if len(latest_message.split()) <= 3:
         return {
-            "reply": "What role are you hiring for and which skills should be assessed?",
+            "reply": "Could you share more details about the role, seniority level, and required skills?",
             "recommendations": [],
             "end_of_conversation": False
         }
 
-    full_query = " ".join([
-        m["content"]
-        for m in messages
-    ])
+    # Off-topic r
+    off_topic = [
+        "weather",
+        "movie",
+        "cricket",
+        "politics",
+        "legal"
+    ]
 
-    results = search_assessments(
-        full_query,
-        k=5
-    )
+    for word in off_topic:
+        if word in latest_message:
+            return {
+                "reply": "I can only help with SHL assessment recommendations.",
+                "recommendations": [],
+                "end_of_conversation": True
+            }
+
+    # Comparison support
+    if "difference" in latest_message or "compare" in latest_message:
+        return {
+            "reply": "OPQ measures personality and behavioral preferences, while GSA evaluates general cognitive and problem-solving ability.",
+            "recommendations": [],
+            "end_of_conversation": False
+        }
+
+    # Retrieve recommendations
+    results = search_assessments(latest_message)
 
     recommendations = []
 
-    for item in results:
+    for item in results[:5]:
 
         recommendations.append({
-     "name": item.get("name", "No Name"),
-    "url": item.get("url", "No URL"),
-    "test_type": "Assessment"
-})
+            "name": item.get("name", "Unknown"),
+            "url": item.get("url", ""),
+            "test_type": "Assessment"
+        })
+
     return {
-        "reply": "Here are recommended SHL assessments.",
+        "reply": f"Here are {len(recommendations)} SHL assessments matching your requirements.",
         "recommendations": recommendations,
-        "end_of_conversation": True
+        "end_of_conversation": False
     }

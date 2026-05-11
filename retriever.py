@@ -8,7 +8,7 @@ from sentence_transformers import SentenceTransformer
 print("Loading retriever...")
 
 model = SentenceTransformer(
-    "all-MiniLM-L6-v2"
+    "all-MiniLM-L6-v2",device="cpu"
 )
 
 index = faiss.read_index(
